@@ -201,7 +201,7 @@ pub async fn process_vote_files_sql(single_file: Option<&str>) -> Result<()> {
 
                     let vote = vote_parent.rollcall_vote;
 
-                    analyze_house_vote(&tx, &info_pulled, &vote).await?;
+                    crate::sql_house::get_house_vote(&tx, &info_pulled, &vote).await?;
 
                 }
                 "senate" => {

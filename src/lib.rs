@@ -42,6 +42,7 @@ pub mod responses;
 
 pub mod sqllite;
 pub mod sql_senate;
+pub mod sql_house;
 
 pub mod json_master;
 
