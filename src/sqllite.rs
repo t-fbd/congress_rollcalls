@@ -1,11 +1,9 @@
 // sqllite.rs
 
-use rusqlite::OptionalExtension;
-use rusqlite::{params, Connection, Error, Result};
+use rusqlite::{Connection, Error, Result};
 use std::fs::File;
 use walkdir::WalkDir;
 use indicatif::{ProgressBar, ProgressStyle};
-use tokio::task;
 use sha2::{Sha256, Digest}; 
 
 use crate::responses::*;
@@ -21,20 +19,6 @@ pub async fn generate_hash(data: &str) -> String {
     hasher.update(data);
     let result = hasher.finalize();
     format!("{:x}", result)
-}
-
-
-async fn analyze_house_vote(
-    tx: &rusqlite::Transaction<'_>,
-    info_pulled: &(u16, u8, u32, String, u16),
-    vote: &RollCallVoteHouse
-) -> Result<()> {
-    
-
-
-
-
-    Ok(())
 }
 
 
