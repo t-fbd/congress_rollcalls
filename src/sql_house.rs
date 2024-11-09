@@ -1,4 +1,5 @@
 use core::time;
+use std::collections::HashMap;
 
 use crate::responses::*;
 use rusqlite::Result;
@@ -11,9 +12,9 @@ pub async fn get_house_vote(
     
     let (congress, session, roll_call, chamber, year) = info_pulled;
 
-    let vote_metadata = vote.vote_metadata;
+    let vote_metadata = vote.vote_metadata.clone();
 
-    let vote_data = if let Some(vote_data) = vote.vote_data {
+    let vote_data = if let Some(vote_data) = vote.vote_data.clone() {
         vote_data
     } else {
         VoteDataHouse::default()
@@ -68,7 +69,15 @@ pub async fn get_house_vote(
         _ => "null".to_string()
     };
 
-    
+    let vote_totals = vote_metadata.vote_totals.unwrap_or(VoteTotalsHouse::default());
+
+    let totals_by_candidate = vote_totals.totals_by_candidate.unwrap_or(Vec::from([TotalsByCandidateHouse::default()]));
+
+    let totals_by_party = vote_totals.totals_by_party.unwrap_or(Vec::from([TotalsByPartyHouse::default()]));
+
+    // total, yea, nay, present, absent
+    let totals_by_vote = vote_totals.totals_by_vote.unwrap_or(TotalsByVoteHouse::default());
+
 
     Ok(())
 }

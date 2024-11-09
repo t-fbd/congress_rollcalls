@@ -22,7 +22,8 @@ pub async fn get_senate_vote(
     tx: &rusqlite::Transaction<'_>,
     info_pulled: &(u16, u8, u32, String, u16),
     vote: &RollCallVoteSenate
-) -> (u16, u8, u32, String, u16, String, String, String, String, String, String, String, String, String, Vec<DocumentSenate>, Vec<AmendmentSenate>, u32, u32, u32, u32, String, String, Vec<MemberSenate>, Vec<CongressionalMember>) {
+) -> SenateInfo
+{
     let (congress_number, session_number, rollcall_number, chamber, year) = info_pulled.clone();
 
     let vote_hash = generate_hash(&serde_json::to_string(vote).unwrap()).await;
@@ -338,14 +339,14 @@ pub async fn get_senate_vote(
         (vec![], vec![])
     };
 
-    let senate_info = (
+    let senate_info: SenateInfo = SenateInfo {
         congress_number,
         session_number,
         rollcall_number,
-        chamber.clone(),
+        chamber: chamber.clone(),
         year,
         // hash generated from the vote object
-        vote_hash.clone(),
+        vote_hash: vote_hash.clone(),
         vote_date,
         vote_modify_date,
         vote_question,
@@ -363,15 +364,14 @@ pub async fn get_senate_vote(
         present,
         absent,
         // name
-        tie_breaker.0,
+        tie_breaker_name: tie_breaker.0,
         // paired_with
-        tie_breaker.1,
+        tie_breaker_paired: tie_breaker.1,
         // vec of members as MemberSenate objects
-        members.0,
+        members_as_is: members.0,
         // vec of members as CongressionalMember objects
-        members.1
-    );
-
+        members_to_gen: members.1
+    };
 
     senate_info
 }

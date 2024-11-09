@@ -202,58 +202,56 @@ pub async fn process_vote_files_sql(single_file: Option<&str>) -> Result<()> {
 
                     let vote_info = crate::sql_senate::get_senate_vote(&tx, &info_pulled, &vote).await;
 
-                    let (congress_number, session_number, rollcall_number, chamber, year, vote_hash, vote_date, vote_modify_date, vote_question, vote_question_text, vote_document_text, vote_result, vote_title, majority_requirement, documents, amendments, yay, nay, present, absent, tie_breaker_name, tie_breaker_paired, senate_members, gen_members) = vote_info.clone();
-
                     let vote_metadata = (
                         congress_number,
                         session_number,
                         rollcall_number,
                         chamber.clone(),
                         year,
-                        vote_hash.clone(),
-                        vote_date.clone(),
-                        vote_modify_date.clone(),
-                        vote_question.clone(),
-                        vote_question_text.clone(),
-                        vote_document_text.clone(),
-                        vote_result.clone(),
-                        vote_title.clone(),
-                        documents.clone(),
-                        amendments.clone(),
-                        majority_requirement.clone(),
-                        (   yay,
-                            nay,
-                            present,
-                            absent,
-                            tie_breaker_name.clone(),
-                            tie_breaker_paired.clone()
+                        vote_info.vote_hash.clone(),
+                        vote_info.vote_date.clone(),
+                        vote_info.vote_modify_date.clone(),
+                        vote_info.vote_question.clone(),
+                        vote_info.vote_question_text.clone(),
+                        vote_info.vote_document_text.clone(),
+                        vote_info.vote_result.clone(),
+                        vote_info.vote_title.clone(),
+                        vote_info.documents.clone(),
+                        vote_info.amendments.clone(),
+                        vote_info.majority_requirement.clone(),
+                        (   vote_info.yay,
+                            vote_info.nay,
+                            vote_info.present,
+                            vote_info.absent,
+                            vote_info.tie_breaker_name.clone(),
+                            vote_info.tie_breaker_paired.clone()
                         )
                     );
 
                     let count_data = (
-                        vote_hash.clone(),
+                        vote_info.vote_hash.clone(),
                         congress_number,
                         session_number,
                         rollcall_number,
                         chamber.clone(),
                         year,
-                        yay,
-                        nay,
-                        present,
-                        absent,
-                        tie_breaker_name.clone(),
-                        tie_breaker_paired.clone()
+                        vote_info.yay,
+                        vote_info.nay,
+                        vote_info.present,
+                        vote_info.absent,
+                        vote_info.tie_breaker_name.clone(),
+                        vote_info.tie_breaker_paired.clone()
                     );
 
                     let member_data = (
-                        vote_hash.clone(),
+                        vote_info.vote_hash.clone(),
                         congress_number,
                         session_number,
                         rollcall_number,
                         chamber.clone(),
                         year,
-                        senate_members.clone(),
-                        gen_members.clone()
+                        vote_info.members_as_is.clone(),
+                        vote_info.members_to_gen.clone()
                     );
 
                     println!("{}", congress_number);
@@ -261,29 +259,31 @@ pub async fn process_vote_files_sql(single_file: Option<&str>) -> Result<()> {
                     println!("{}", rollcall_number);
                     println!("{}", chamber);
                     println!("{}", year);
-                    println!("{}", vote_hash);
-                    println!("{}", vote_date);
-                    println!("{}", vote_modify_date);
-                    println!("{}", vote_question);
-                    println!("{}", vote_question_text);
-                    println!("{}", vote_document_text);
-                    println!("{}", vote_result);
-                    println!("{}", vote_title);
-                    println!("{}", majority_requirement);
-                    for doc in documents {
+                    println!("{}", vote_info.vote_hash);
+                    println!("{}", vote_info.vote_date);
+                    println!("{}", vote_info.vote_modify_date);
+                    println!("{}", vote_info.vote_question);
+                    println!("{}", vote_info.vote_question_text);
+                    println!("{}", vote_info.vote_document_text);
+                    println!("{}", vote_info.vote_result);
+                    println!("{}", vote_info.vote_title);
+                    println!("{}", vote_info.majority_requirement);
+                    for doc in vote_info.documents.clone() {
                         println!("{}", serde_json::to_string_pretty(&doc).unwrap());
                     }
-                    for amend in amendments {
+                    for amend in vote_info.amendments.clone() {
                         println!("{}", serde_json::to_string_pretty(&amend).unwrap());
                     }
-                    println!("{}", yay);
-                    println!("{}", nay);
-                    println!("{}", present);
-                    println!("{}", absent);
-                    println!("{}", tie_breaker_name);
-                    println!("{}", tie_breaker_paired);
-                    println!("{:#?}", senate_members);
-                    println!("{:#?}", gen_members);
+                    println!("{}", vote_info.yay);
+                    println!("{}", vote_info.nay);
+                    println!("{}", vote_info.present);
+                    println!("{}", vote_info.absent);
+                    println!("{}", vote_info.tie_breaker_name);
+                    println!("{}", vote_info.tie_breaker_paired);
+                    println!("{:#?}", vote_info.members_as_is);
+                    println!("{:#?}", vote_info.members_to_gen);
+
+                    println!("{:#?}", vote_info);
 
                     // Insert the vote metadata
                     crate::sql_senate::insert_vote_metadata_senate(&tx, vote_metadata).await;

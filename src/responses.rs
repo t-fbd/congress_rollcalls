@@ -231,6 +231,17 @@ pub struct VoteTotalsHouse {
     pub totals_by_party: Option<Vec<TotalsByPartyHouse>>,
     #[serde(rename = "totals-by-vote")]
     pub totals_by_vote: Option<TotalsByVoteHouse>,
+    #[serde(rename = "totals-by-candidate")]
+    pub totals_by_candidate: Option<Vec<TotalsByCandidateHouse>>,
+    #[serde(flatten)]
+    pub extra: Option<HashMap<String, serde_json::Value>>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct TotalsByCandidateHouse {
+    pub candidate: Option<String>,
+    #[serde(rename = "candidate-total")]
+    pub candidate_total: Option<String>,
     #[serde(flatten)]
     pub extra: Option<HashMap<String, serde_json::Value>>,
 }
@@ -477,4 +488,33 @@ pub struct CongressionalMember {
     pub state: String,
     // this should be seperate to the unique id applied by a database
     pub generated_id: String,
+}
+
+
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct SenateInfo {
+    pub congress_number: u16,
+    pub session_number: u8,
+    pub rollcall_number: u32,
+    pub chamber: String,
+    pub year: u16,
+    pub vote_hash: String,
+    pub vote_date: String,
+    pub vote_modify_date: String,
+    pub vote_question: String,
+    pub vote_question_text: String,
+    pub vote_document_text: String,
+    pub vote_result: String,
+    pub vote_title: String,
+    pub majority_requirement: String,
+    pub documents: Vec<DocumentSenate>,
+    pub amendments: Vec<AmendmentSenate>,
+    pub yay: u32,
+    pub nay: u32,
+    pub present: u32,
+    pub absent: u32,
+    pub tie_breaker_name: String,
+    pub tie_breaker_paired: String,
+    pub members_as_is: Vec<MemberSenate>,
+    pub members_to_gen: Vec<CongressionalMember>
 }
